@@ -31,5 +31,26 @@ bool dati_is_date_time_valid(struct date_time* dati)
 
 void dati_increment_date_time(struct date_time* dati)
 {
-    // TODO
+    dati->second++;
+    if(dati->second > DATI_SECOND_MAX) {
+        dati->second = DATI_SECOND_MIN;
+        dati->minute++;
+    }
+    if(dati->minute > DATI_MINUTE_MAX) {
+        dati->minute = DATI_MINUTE_MIN;
+        dati->hour++;
+    }
+    if(dati->hour > DATI_HOUR_MAX) {
+        dati->hour = DATI_HOUR_MIN;
+        dati->day++;
+    }
+    uint8_t max_days = dati_get_days_of_month(dati->year, (enum dati_month)dati->month);
+    if(dati->day > max_days) {
+        dati->day = DATI_DAY_MIN;
+        dati->month++;
+    }
+    if(dati->month > DATI_MONTH_DECEMBER) {
+        dati->month = DATI_MONTH_JANUARY;
+        dati->year++;
+    }
 }

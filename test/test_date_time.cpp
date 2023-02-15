@@ -70,5 +70,90 @@ TEST_CASE("dati_get_days_of_month()")
 
 TEST_CASE("dati_is_date_time_valid()")
 {
-    // TODO
+    SUBCASE("zero init") {
+        struct date_time dati = {0, 0, 0, 0, 0, 0, 0};
+        CHECK(dati_is_date_time_valid(&dati) == false);
+    }
+    SUBCASE("lower limit") {
+        struct date_time dati = {1900, 1, 1, 0, 0, 0};
+        CHECK(dati_is_date_time_valid(&dati) == true);
+        SUBCASE("year") {
+            dati.year = 1899;
+            CHECK(dati_is_date_time_valid(&dati) == false);
+        }
+        SUBCASE("month") {
+            dati.month = 0;
+            CHECK(dati_is_date_time_valid(&dati) == false);
+        }
+        SUBCASE("day") {
+            dati.day = 0;
+            CHECK(dati_is_date_time_valid(&dati) == false);
+        }
+    }
+    SUBCASE("upper limit") {
+        struct date_time dati = {4000, 12, 31, 23, 59, 59};
+        CHECK(dati_is_date_time_valid(&dati) == true);
+        SUBCASE("year") {
+            dati.year = 4001;
+            CHECK(dati_is_date_time_valid(&dati) == false);
+        }
+        SUBCASE("month") {
+            dati.month = 13;
+            CHECK(dati_is_date_time_valid(&dati) == false);
+        }
+        SUBCASE("day") {
+            dati.day = 32;
+            CHECK(dati_is_date_time_valid(&dati) == false);
+        }
+        SUBCASE("hour") {
+            dati.hour = 24;
+            CHECK(dati_is_date_time_valid(&dati) == false);
+        }
+        SUBCASE("minute") {
+            dati.minute = 60;
+            CHECK(dati_is_date_time_valid(&dati) == false);
+        }
+        SUBCASE("second") {
+            dati.second = 60;
+            CHECK(dati_is_date_time_valid(&dati) == false);
+        }
+    }
+    SUBCASE("no leap year") {
+        struct date_time dati = {2023, 2, 15, 15, 47, 56, 0};
+        CHECK(dati_is_date_time_valid(&dati) == true);
+
+        dati.day = 28;
+        CHECK(dati_is_date_time_valid(&dati) == true);
+
+        dati.day = 29;
+        CHECK(dati_is_date_time_valid(&dati) == false);
+    }
+    SUBCASE("leap year") {
+        struct date_time dati = {2024, 2, 28, 10, 21, 31};
+        CHECK(dati_is_date_time_valid(&dati) == true);
+
+        dati.day = 29;
+        CHECK(dati_is_date_time_valid(&dati) == true);
+
+        dati.day = 30;
+        CHECK(dati_is_date_time_valid(&dati) == false);
+    }
+}
+
+TEST_CASE("dati_increment_date_time()")
+{
+    struct date_time dati = {2023, 2, 15, 15, 47, 56, 0};
+    struct date_time check = {2023, 2, 15, 15, 47, 57, 0};
+    dati_increment_date_time(&dati);
+    CHECK(dati_are_date_time_equal(&dati, &check) == true);
+
+    dati = {2022, 12, 31, 23, 59, 59};
+    dati_increment_date_time(&dati);
+    check = {2023, 1, 1, 0, 0, 0};
+    CHECK(dati_are_date_time_equal(&dati, &check) == true);
+
+    dati = {2024, 2, 28, 23, 59, 59};
+    dati_increment_date_time(&dati);
+    check = {2024, 2, 29, 0, 0, 0};
+    CHECK(dati_are_date_time_equal(&dati, &check) == true);
 }

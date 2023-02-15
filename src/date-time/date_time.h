@@ -15,7 +15,7 @@
 #define DATI_MINUTE_MIN    0
 #define DATI_MINUTE_MAX    59
 #define DATI_SECOND_MIN    0
-#define DATI_SECOND_MAX    60
+#define DATI_SECOND_MAX    59 // TODO: allow leap second?
 
 enum dati_month {
     DATI_MONTH_JANUARY = 1,
@@ -81,6 +81,21 @@ static inline uint8_t dati_get_days_of_month(uint16_t year, enum dati_month mont
             return 31;
         }
     }
+}
+
+static inline bool dati_are_date_time_equal(struct date_time* first, struct date_time* second)
+{
+    if(
+        (first->year != second->year) ||
+        (first->month != second->month) ||
+        (first->day != second->day) ||
+        (first->hour != second->hour) ||
+        (first->minute != second->minute) ||
+        (first->second != second->second)
+    ) {
+        return false;
+    }
+    return true;
 }
 
 bool dati_is_date_time_valid(struct date_time* dati);
